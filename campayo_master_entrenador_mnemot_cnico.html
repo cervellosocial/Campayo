@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campayo Master | Gimnasio Mental & Sistema Numérico</title>
+    <!-- Tailwind CSS para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    animation: {
+                        'bounce-short': 'bounceShort 0.4s ease-in-out',
+                        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop': 'pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        bounceShort: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0.5' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(99, 102, 241, 0.3)' },
+                            '50%': { boxShadow: '0 0 28px rgba(16, 185, 129, 0.5)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos personalizados y utilidades visuales */
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.14) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.10) 0px, transparent 50%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.78);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .key-btn {
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .key-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* Scrollbar estilizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Canvas de partículas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-indigo-500 selection:text-white flex flex-col">
+
+    <!-- Canvas para efectos de celebración -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- BARRA SUPERIOR DE GAMIFICACIÓN Y CONTROLES -->
+    <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 px-3 sm:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo y Título -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20 font-mono font-black text-white text-lg">
+                    09
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-base sm:text-lg tracking-tight text-white">Campayo<span class="text-indigo-400">Master</span></h1>
+                        <span id="rank-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Novato
+                        </span>
+                    </div>
+                    <!-- Barra de progreso de Nivel XP -->
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="w-24 sm:w-36 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="xp-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500" style="width: 10%"></div>
+                        </div>
+                        <span id="xp-text" class="text-[11px] font-mono text-slate-400">0 XP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicadores de Racha y Controles Rápidos -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Racha (Streak) -->
+                <div id="streak-container" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/70">
+                    <span class="text-base" id="streak-fire">🔥</span>
+                    <span id="streak-count" class="font-mono font-bold text-sm text-amber-400">0</span>
+                    <span id="multiplier-badge" class="hidden text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">x2</span>
+                </div>
+
+                <!-- Botón Modo Examen / Chuleta -->
+                <button id="toggle-cheat-btn" onclick="toggleCheatSheet()" title="Mostrar u ocultar tabla de ayuda (Modo Examen)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25">
+                    <svg id="eye-icon-open" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <svg id="eye-icon-closed" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                    <span id="cheat-btn-text" class="hidden sm:inline">Chuleta ON</span>
+                </button>
+
+                <!-- Botón Estadísticas -->
+                <button onclick="openStatsModal()" title="Ver estadísticas de aciertos y puntos débiles"
+                    class="p-2 rounded-xl bg-slate-800/90 border border-slate-700/70 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </button>
+
+                <!-- Botón Sonido -->
+                <button id="sound-toggle-btn" onclick="toggleSound()" title="Activar/Desactivar efectos de sonido"
+                    class="p-2 rounded-xl bg-slate-800/90 border border-slate-700/70 text-indigo-400 hover:bg-slate-700 transition">
+                    <svg id="sound-on-icon" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                    <svg id="sound-off-icon" class="w-4 h-4 sm:w-5 sm:h-5 hidden text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CHULETA INTERACTIVA (TABLA DE REFERENCIA RÁPIDA) -->
+    <section id="cheat-sheet-bar" class="bg-slate-900/90 border-b border-slate-800/90 px-3 py-2.5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 sm:gap-2" id="cheat-grid">
+                <!-- Se genera dinámicamente desde JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- NAVEGACIÓN DE MODOS DE ENTRENAMIENTO -->
+    <nav class="max-w-7xl mx-auto w-full px-3 sm:px-6 pt-4 pb-2">
+        <div class="flex overflow-x-auto gap-2 pb-2 no-scrollbar" id="mode-tabs">
+            <button onclick="switchMode('guide')" data-mode="guide" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/25">
+                <span>📖</span> Reglas & Asociaciones
+            </button>
+            <button onclick="switchMode('reflex')" data-mode="reflex" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white">
+                <span>⚡</span> Reflejos (Letra ↔ Nº)
+            </button>
+            <button onclick="switchMode('decoder')" data-mode="decoder" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white">
+                <span>🔍</span> Decodificador (Palabra → Nº)
+            </button>
+            <button onclick="switchMode('builder')" data-mode="builder" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white">
+                <span>🏗️</span> Constructor (Nº → Palabra)
+            </button>
+            <button onclick="switchMode('match')" data-mode="match" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white">
+                <span>🧩</span> Lluvia de Parejas
+            </button>
+            <button onclick="switchMode('locker')" data-mode="locker" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white">
+                <span>🗄️</span> Casillero 00-99
+            </button>
+            <button onclick="switchMode('blitz')" data-mode="blitz" class="mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-amber-300 border-amber-500/30 hover:bg-amber-500/10">
+                <span>⏱️</span> Contrarreloj 60s
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL DE EJERCICIOS -->
+    <main class="flex-1 max-w-5xl mx-auto w-full px-3 sm:px-6 py-4 flex flex-col">
+        
+        <!-- ========================================================= -->
+        <!-- VISTA 0: GUÍA VISUAL Y REGLAS MNEMOTÉCNICAS DE CAMPAYO    -->
+        <!-- ========================================================= -->
+        <div id="view-guide" class="mode-view space-y-6 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-7">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Fundamentos del Sistema</span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">Código Numérico-Consonántico</h2>
+                        <p class="text-slate-400 text-sm mt-1">Memoriza la relación entre cada dígito y sus consonantes mediante asociaciones visuales y fonéticas.</p>
+                    </div>
+                    <button onclick="switchMode('reflex')" class="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition shrink-0">
+                        ¡Empezar a Entrenar! →
+                    </button>
+                </div>
+
+                <!-- Tarjetas explicativas de cada número -->
+                <div id="guide-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mt-6">
+                    <!-- Rellenado por JS -->
+                </div>
+
+                <!-- Reglas de oro de conversión -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/70 p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold shrink-0">A</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Vocales Neutras</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Las vocales (<strong>A, E, I, O, U</strong>) y tildes no tienen valor numérico. Sirven como comodines para formar palabras.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">RR</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Doble Consonante</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Cada consonante cuenta por su posición: <strong>PE<span class="text-amber-300">RR</span>O</strong> = P(9) + R(4) + R(4) = <strong>944</strong>. <strong>CA<span class="text-amber-300">LL</span>E</strong> ignora la LL (no listada) = C(0).</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shrink-0">👁️</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">Modo Examen</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Usa el botón <strong>"Chuleta ON/OFF"</strong> arriba a la derecha para ocultar la tabla superior cuando te sientas listo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 1: REFLEJOS RÁPIDOS (LETRA <-> NÚMERO)              -->
+        <!-- ========================================================= -->
+        <div id="view-reflex" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-8 text-center relative overflow-hidden">
+                <!-- Selector de sub-modo -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                    <div class="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800">
+                        <button onclick="setReflexSubmode('letter2num')" id="sub-letter2num" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition">Letra → Número</button>
+                        <button onclick="setReflexSubmode('num2letter')" id="sub-num2letter" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">Número → Letra</button>
+                        <button onclick="setReflexSubmode('mixed')" id="sub-mixed" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">Mixto</button>
+                    </div>
+                    <div class="text-xs font-mono text-slate-400">
+                        Velocidad media: <span id="reflex-avg-speed" class="text-emerald-400 font-bold">--</span>s
+                    </div>
+                </div>
+
+                <!-- Estímulo Central -->
+                <div class="my-6">
+                    <p id="reflex-prompt-label" class="text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2">¿A qué número pertenece esta consonante?</p>
+                    <div id="reflex-stimulus-box" class="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-indigo-500/40 flex items-center justify-center shadow-2xl">
+                        <span id="reflex-stimulus" class="font-mono text-6xl sm:text-7xl font-black text-white">F</span>
+                    </div>
+                    <p id="reflex-feedback" class="h-6 mt-3 text-sm font-bold text-slate-400"></p>
+                </div>
+
+                <!-- Teclado Numérico (para Letra -> Número) -->
+                <div id="reflex-numpad" class="max-w-md mx-auto grid grid-cols-5 gap-2 sm:gap-3 mt-4">
+                    <!-- Botones 0-9 generados por JS -->
+                </div>
+
+                <!-- Opciones de Letras (para Número -> Letra) -->
+                <div id="reflex-letterpad" class="hidden max-w-md mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                    <!-- Botones de letras generados por JS -->
+                </div>
+
+                <p class="text-[11px] text-slate-500 mt-5 hidden sm:block">💡 Tip: También puedes usar las teclas <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">0</kbd> a <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">9</kbd> de tu teclado físico.</p>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 2: DECODIFICADOR DE PALABRAS (PALABRA -> NÚMERO)    -->
+        <!-- ========================================================= -->
+        <div id="view-decoder" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-8 text-center">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Decodificador de Palabras</span>
+                    <div class="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800">
+                        <button onclick="setDecoderDifficulty(2)" id="dec-diff-2" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white">2 Cifras</button>
+                        <button onclick="setDecoderDifficulty(3)" id="dec-diff-3" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400">3 Cifras</button>
+                        <button onclick="setDecoderDifficulty(4)" id="dec-diff-4" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400">4 Cifras</button>
+                        <button onclick="setDecoderDifficulty(0)" id="dec-diff-0" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400">Todas</button>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-3">Traduce las consonantes de la palabra a su código numérico:</p>
+
+                <!-- Palabra desglosada letra a letra con feedback visual en vivo -->
+                <div id="decoder-word-display" class="flex flex-wrap justify-center gap-1.5 sm:gap-2.5 my-5 min-h-[64px]">
+                    <!-- Letras renderizadas dinámicamente -->
+                </div>
+
+                <!-- Caja de respuesta numérica -->
+                <div class="max-w-xs mx-auto my-4">
+                    <div id="decoder-input-display" class="h-14 rounded-2xl bg-slate-900/90 border-2 border-slate-700 flex items-center justify-center font-mono text-3xl font-black tracking-[0.25em] text-indigo-300">
+                        _ _
+                    </div>
+                </div>
+
+                <p id="decoder-feedback" class="h-6 text-sm font-bold mb-3"></p>
+
+                <!-- Teclado Numérico Táctil + Borrar + Saltar -->
+                <div class="max-w-sm mx-auto grid grid-cols-5 gap-2">
+                    <button onclick="decoderInputDigit('1')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">1</button>
+                    <button onclick="decoderInputDigit('2')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">2</button>
+                    <button onclick="decoderInputDigit('3')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">3</button>
+                    <button onclick="decoderInputDigit('4')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">4</button>
+                    <button onclick="decoderInputDigit('5')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">5</button>
+                    <button onclick="decoderInputDigit('6')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">6</button>
+                    <button onclick="decoderInputDigit('7')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">7</button>
+                    <button onclick="decoderInputDigit('8')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">8</button>
+                    <button onclick="decoderInputDigit('9')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">9</button>
+                    <button onclick="decoderInputDigit('0')" class="key-btn py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-lg text-white">0</button>
+                </div>
+
+                <div class="max-w-sm mx-auto grid grid-cols-2 gap-2 mt-2">
+                    <button onclick="decoderBackspace()" class="key-btn py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-sm">
+                        ⌫ Borrar
+                    </button>
+                    <button onclick="nextDecoderWord(true)" class="key-btn py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-sm">
+                        Saltar Palabra →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 3: CONSTRUCTOR DE PALABRAS (NÚMERO -> PALABRA)      -->
+        <!-- ========================================================= -->
+        <div id="view-builder" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-8">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-purple-400">Creatividad Mnemotécnica</span>
+                        <h3 class="text-lg font-extrabold text-white">Constructor de Palabras</h3>
+                    </div>
+                    <div class="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800">
+                        <button onclick="setBuilderDigits(2)" id="bld-dig-2" class="px-3 py-1 rounded-lg text-xs font-bold bg-purple-600 text-white">2 Dígitos</button>
+                        <button onclick="setBuilderDigits(3)" id="bld-dig-3" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400">3 Dígitos</button>
+                    </div>
+                </div>
+
+                <div class="text-center my-5">
+                    <p class="text-xs text-slate-400 mb-2">Inventa o escribe <strong>cualquier palabra en español</strong> cuyas consonantes formen este número:</p>
+                    <div class="inline-block px-8 py-4 rounded-3xl bg-slate-900 border-2 border-purple-500/40 shadow-xl">
+                        <span id="builder-target-number" class="font-mono text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400">41</span>
+                    </div>
+
+                    <!-- Pista opcional de consonantes permitidas -->
+                    <div class="mt-3">
+                        <button onclick="toggleBuilderHint()" class="text-xs text-indigo-400 hover:text-indigo-300 underline font-medium">
+                            Ver/Ocultar consonantes disponibles
+                        </button>
+                        <div id="builder-hint-box" class="hidden mt-2 flex justify-center gap-2 flex-wrap">
+                            <!-- Chips de consonantes -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de entrada -->
+                <form onsubmit="submitBuilderWord(event)" class="max-w-md mx-auto space-y-3">
+                    <div class="relative">
+                        <input type="text" id="builder-input" autocomplete="off" autocapitalize="characters" placeholder="Escribe tu palabra aquí (ej: RATA)..."
+                            oninput="previewBuilderWord()"
+                            class="w-full px-4 py-3.5 rounded-2xl bg-slate-900 border-2 border-slate-700 focus:border-purple-500 focus:outline-none text-center font-bold text-xl uppercase tracking-wider text-white placeholder-slate-600">
+                    </div>
+
+                    <!-- Análisis en tiempo real de lo que escribe el usuario -->
+                    <div id="builder-live-analysis" class="min-h-[36px] flex items-center justify-center gap-2 text-xs text-slate-400">
+                        Escribe una palabra para ver su conversión en vivo...
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20 transition">
+                            ✓ Comprobar Palabra
+                        </button>
+                        <button type="button" onclick="nextBuilderTarget()" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-sm">
+                            Otro Nº
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Feedback y botón de guardar en Casillero Mental -->
+                <div id="builder-result-box" class="hidden max-w-md mx-auto mt-4 p-4 rounded-xl border text-center"></div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 4: LLUVIA DE ASOCIACIONES (EMPAREJAR 5x5)           -->
+        <!-- ========================================================= -->
+        <div id="view-match" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-7">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-5">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Agilidad Visual</span>
+                        <h3 class="text-lg font-extrabold text-white">Lluvia de Asociaciones</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-mono bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+                            Parejas: <strong id="match-progress" class="text-emerald-400">0/5</strong>
+                        </span>
+                        <button onclick="initMatchGame()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">
+                            ↻ Nuevo Tablero
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-400 text-center mb-4">Selecciona un <strong>número</strong> de la izquierda y únelo con su <strong>palabra</strong> de la derecha:</p>
+
+                <div class="grid grid-cols-2 gap-3 sm:gap-6 max-w-2xl mx-auto">
+                    <!-- Columna de Números -->
+                    <div id="match-numbers-col" class="space-y-2.5"></div>
+                    <!-- Columna de Palabras -->
+                    <div id="match-words-col" class="space-y-2.5"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 5: CASILLERO MENTAL (00 - 99) & ENTRENADOR          -->
+        <!-- ========================================================= -->
+        <div id="view-locker" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-7">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-5">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Tu Palacio de la Memoria</span>
+                        <h3 class="text-xl font-extrabold text-white">Casillero Mental (00 – 99)</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Personaliza tu palabra imagen para cada número y entrena con tus propias asociaciones.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleLockerQuiz()" id="locker-quiz-btn" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition">
+                            🎯 Test de mi Casillero
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-panel de Quiz del Casillero (Oculto por defecto) -->
+                <div id="locker-quiz-panel" class="hidden mb-6 p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 text-center">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold text-emerald-400 uppercase">Entrenando tu Casillero Personal</span>
+                        <button onclick="toggleLockerQuiz()" class="text-xs text-slate-400 hover:text-white">✕ Cerrar Test</button>
+                    </div>
+                    <p id="locker-quiz-question" class="text-sm text-slate-300 mb-2">¿Qué imagen mental tienes asignada al número...?</p>
+                    <div id="locker-quiz-target" class="font-mono text-4xl font-black text-white my-3">42</div>
+                    <div id="locker-quiz-options" class="grid grid-cols-2 gap-2.5 max-w-md mx-auto mt-4"></div>
+                    <p id="locker-quiz-feedback" class="h-5 mt-3 text-xs font-bold"></p>
+                </div>
+
+                <!-- Buscador / Filtro rápido -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <input type="text" id="locker-search" oninput="renderLockerGrid()" placeholder="Buscar número (ej: 42) o palabra..."
+                        class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64">
+                    <span class="text-xs text-slate-400">Haz clic en cualquier tarjeta para editar tu palabra</span>
+                </div>
+
+                <!-- Grid del Casillero 00 al 99 -->
+                <div id="locker-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 max-h-[540px] overflow-y-auto pr-1">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VISTA 6: CONTRARRELOJ / SUPERVIVENCIA 60s                 -->
+        <!-- ========================================================= -->
+        <div id="view-blitz" class="mode-view hidden space-y-5 animate-pop">
+            <div class="glass-card rounded-2xl p-5 sm:p-8 text-center">
+                <!-- Pantalla de Inicio del Blitz -->
+                <div id="blitz-start-screen" class="py-6 space-y-4">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl">
+                        ⏱️
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white">Desafío Contrarreloj 60s</h2>
+                    <p class="text-sm text-slate-400 max-w-md mx-auto">
+                        Resuelve la máxima cantidad de retos mixtos (Letra → Número, Número → Letra y Palabra → Número) antes de que el reloj llegue a cero.
+                    </p>
+                    <div class="inline-block px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
+                        🏆 Récord Personal: <strong id="blitz-best-score" class="text-amber-400 font-mono text-base">0</strong> pts
+                    </div>
+                    <div class="pt-2">
+                        <button onclick="startBlitzGame()" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-base shadow-xl shadow-amber-500/25 transition">
+                            ¡COMENZAR RETO!
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pantalla Activa del Blitz -->
+                <div id="blitz-active-screen" class="hidden space-y-5">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="text-left">
+                            <span class="text-[11px] uppercase text-slate-400 font-bold">Puntuación</span>
+                            <div id="blitz-score" class="font-mono text-2xl font-black text-emerald-400">0</div>
+                        </div>
+                        <div class="flex-1 max-w-xs">
+                            <div class="flex justify-between text-xs font-mono mb-1">
+                                <span class="text-slate-400">Tiempo</span>
+                                <span id="blitz-time-text" class="text-amber-400 font-bold">60s</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="blitz-time-bar" class="h-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-200" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <button onclick="stopBlitzGame()" class="text-xs text-slate-400 hover:text-rose-400 font-bold">Rendirse</button>
+                    </div>
+
+                    <div class="py-4">
+                        <span id="blitz-q-type" class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300">Letra → Número</span>
+                        <div id="blitz-stimulus" class="font-mono text-4xl sm:text-5xl font-black text-white my-5">M</div>
+                        <div id="blitz-options" class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                            <!-- 4 opciones rápidas -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pantalla Final del Blitz -->
+                <div id="blitz-end-screen" class="hidden py-6 space-y-4">
+                    <div class="text-4xl">🏁</div>
+                    <h3 class="text-2xl font-black text-white">¡Tiempo Agotado!</h3>
+                    <p class="text-slate-400 text-sm">Has conseguido una puntuación de:</p>
+                    <div id="blitz-final-score" class="font-mono text-5xl font-black text-amber-400">0</div>
+                    <p id="blitz-new-record-msg" class="hidden text-xs font-bold text-emerald-400">🎉 ¡NUEVO RÉCORD PERSONAL!</p>
+                    <div class="pt-3">
+                        <button onclick="startBlitzGame()" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm">
+                            ↻ Jugar Otra Vez
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL DE ESTADÍSTICAS Y PUNTOS DÉBILES -->
+    <div id="stats-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-lg w-full p-6 space-y-5 border border-slate-700 animate-pop">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-extrabold text-white">📊 Estadísticas de Rendimiento</h3>
+                <button onclick="closeStatsModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <div class="text-xs text-slate-400">Aciertos</div>
+                    <div id="stat-total-hits" class="font-mono text-xl font-black text-emerald-400 mt-1">0</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <div class="text-xs text-slate-400">Precisión</div>
+                    <div id="stat-accuracy" class="font-mono text-xl font-black text-indigo-400 mt-1">0%</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <div class="text-xs text-slate-400">Mejor Racha</div>
+                    <div id="stat-best-streak" class="font-mono text-xl font-black text-amber-400 mt-1">0</div>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Precisión por Dígito (Detecta tus puntos débiles)</h4>
+                <div id="stat-digits-bars" class="space-y-2">
+                    <!-- Barras 0-9 generadas por JS -->
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                <button onclick="resetAllProgress()" class="text-xs text-rose-400 hover:text-rose-300 underline">Reiniciar progreso</button>
+                <button onclick="closeStatsModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA EDITAR PALABRA DEL CASILLERO MENTAL -->
+    <div id="edit-locker-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl max-w-md w-full p-6 space-y-4 border border-slate-700 animate-pop">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-white">Editar Casilla <span id="modal-locker-num" class="font-mono text-indigo-400">00</span></h3>
+                <button onclick="closeEditLockerModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <p class="text-xs text-slate-400">Consonantes permitidas: <strong id="modal-locker-consonants" class="text-emerald-400"></strong></p>
+            <input type="text" id="modal-locker-input" placeholder="Escribe tu palabra clave..."
+                class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold uppercase focus:outline-none focus:border-indigo-500">
+            <p id="modal-locker-warning" class="text-xs text-amber-400 hidden"></p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeEditLockerModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold">Cancelar</button>
+                <button onclick="saveLockerEdit()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Guardar Imagen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="max-w-7xl mx-auto w-full px-4 py-5 text-center text-xs text-slate-500 border-t border-slate-900/80 mt-8">
+        CampayoMaster • Sistema Mnemotécnico Numérico-Consonántico • Entrenamiento Mental Interactivo
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- LÓGICA DE LA APLICACIÓN (MOTOR CAMPAYO, DICCIONARIO, AUDIO Y JUEGOS)  -->
+    <!-- ===================================================================== -->
+    <script>
+        /**
+         * 1. REGLAS OFICIALES DEL SISTEMA CAMPAYO CONFIGURADAS
+         * 0=c,v | 1=l,t | 2=n,ñ,k | 3=m,w | 4=r,y | 5=s,h | 6=d,b | 7=z,f | 8=x,g | 9=j,p,q
+         */
+        const CAMPAYO_MAP = {
+            '0': { letters: ['C', 'V'], hint: 'Cero / Vacío', visual: 'La C es medio cero y la V es el símbolo de Vacío.', color: 'from-slate-500 to-slate-600' },
+            '1': { letters: ['L', 'T'], hint: '1 trazo vertical', visual: 'Tanto la L como la T tienen un único palo vertical como el 1.', color: 'from-blue-500 to-indigo-600' },
+            '2': { letters: ['N', 'Ñ', 'K'], hint: '2 patas / apoyos', visual: 'La N y la Ñ tienen 2 patas apoyadas en el suelo; la K tiene 2 trazos.', color: 'from-cyan-500 to-blue-600' },
+            '3': { letters: ['M', 'W'], hint: '3 patas / puntas', visual: 'La M tiene 3 patas y la W es una M invertida con 3 puntas.', color: 'from-emerald-500 to-teal-600' },
+            '4': { letters: ['R', 'Y'], hint: 'cuatRo / R al revés', visual: 'La R es la letra fuerte de cuatRo; la Y tiene forma de 4.', color: 'from-green-500 to-emerald-600' },
+            '5': { letters: ['S', 'H'], hint: 'Silueta de 5', visual: 'La S tiene exactamente la misma curva que el número 5.', color: 'from-amber-500 to-orange-600' },
+            '6': { letters: ['D', 'B'], hint: 'Barriga abajo', visual: 'La b minúscula parece un 6 y la d su espejo con barriga abajo.', color: 'from-orange-500 to-red-600' },
+            '7': { letters: ['Z', 'F'], hint: 'Forma de 7', visual: 'La Z tiene el trazo cruzado del 7; la F es un 7 invertido.', color: 'from-rose-500 to-pink-600' },
+            '8': { letters: ['X', 'G'], hint: 'Dos bucles / cruces', visual: 'La g minúscula cierra dos círculos como el 8; la X cruza dos líneas.', color: 'from-purple-500 to-violet-600' },
+            '9': { letters: ['J', 'P', 'Q'], hint: 'Barriga arriba', visual: 'La P y la q minúscula tienen el círculo arriba como el 9; la J es su gancho.', color: 'from-fuchsia-500 to-purple-600' }
+        };
+
+        // Mapa inverso: Letra -> Dígito
+        const LETTER_TO_DIGIT = {};
+        Object.entries(CAMPAYO_MAP).forEach(([digit, data]) => {
+            data.letters.forEach(letter => {
+                LETTER_TO_DIGIT[letter] = digit;
+            });
+        });
+
+        /**
+         * 2. DICCIONARIO CURADO DE PALABRAS EN ESPAÑOL (100% coherentes con las reglas)
+         */
+        const WORD_DICTIONARY = [
+            // 2 dígitos
+            "CASA", "VASO", "FOCA", "BOCA", "VACÍO", "PATO", "GATO", "RATA", "LATA", "PELO",
+            "TELA", "LUNA", "CUNA", "MANO", "MONO", "NUBE", "NAVE", "ROPA", "SOPA", "MESA",
+            "MISA", "PESO", "BESO", "DADO", "DEDO", "BODA", "VIDA", "CAFE", "SOFÁ", "ZORRO",
+            "PERRO", "TORO", "LORO", "ORO", "FARO", "TIRO", "MURO", "PURO", "DURO", "CERO",
+            "JUGO", "MAGO", "LAGO", "FUEGO", "HIGO", "VIGA", "SOGA", "PAGO", "OJO", "AJO",
+            "HOJA", "CAJA", "ROJO", "COJO", "TEJA", "REJA", "HIJO", "MAPA", "COPA", "CAPA",
+            "PIPA", "TAPA", "SACO", "PICO", "FOCO", "LOCO", "COCO", "RANA", "LANA", "CAMA",
+            "RAMA", "DAMA", "FAMA", "GOMA", "PUMA", "SUMA", "LIMA", "RIMA", "CIMA", "HUMO",
+            "ZUMO", "RAMO", "REMO", "TIMO", "NIÑO", "PIÑA", "UÑA", "CAÑA", "LEÑA", "SEÑA",
+            "KIWI", "YATE", "YOGA", "RAYO", "MAYO", "HOYO", "JOYA", "SOJA", "ROSA", "OSA",
+            "ISLA", "OLA", "ALA", "UVA", "AVE", "REO", "TÍO", "RÍO", "DÍA", "VÍA",
+            // 3 dígitos
+            "ZAPATO", "MÚSICA", "LIBRO", "CAMINO", "MOLINO", "PALOMA", "PELOTA", "MALETA",
+            "TOMATE", "PATATA", "BANANA", "NARANJA", "LIMÓN", "MELÓN", "SANDÍA", "CEREZA",
+            "CONEJO", "OVEJA", "ABEJA", "JIRAFA", "TIGRE", "CEBRA", "ÁGUILA", "TORTUGA",
+            "DELFÍN", "TIBURÓN", "BALLENA", "PULPO", "MEDUSA", "GUSANO", "ARAÑA", "MOSCA",
+            "AVISPA", "HORMIGA", "CIGARRA", "GRILLO", "SAPO", "LAGARTO", "IGUANA", "COBRA",
+            "CAMISA", "CORBATA", "CHAQUETA", "ABRIGO", "BUFANDA", "GUANTE", "GORRA", "BOTAS",
+            "MEDIAS", "FALDA", "VESTIDO", "PIJAMA", "CINTURÓN", "BOLSILLO", "BOTÓN", "CREMALLERA",
+            "VENTANA", "PUERTA", "PARED", "TEJADO", "SUELO", "ESCALERA", "COCINA", "SALÓN",
+            "CUARTO", "BAÑO", "JARDÍN", "TERRAZA", "BALCÓN", "GARAJE", "SÓTANO", "DESVÁN",
+            "NEVERA", "HORNO", "ESTUFA", "SARTÉN", "CAZUELA", "TENEDOR", "CUCHARA", "CUCHILLO",
+            "PLATO", "TAZA", "JARRA", "BOTELLA", "COPA", "SERVILLETA", "MANTEL", "BANDEJA",
+            "ESPEJO", "PEINE", "CEPILLO", "JABÓN", "TOALLA", "ESPONJA", "PERFUME", "TIJERAS",
+            "MARTILLO", "CLAVO", "TORNILLO", "TUERCA", "SIERRA", "TALADRO", "PINCEL", "BROCHA",
+            "PINTURA", "LIENZO", "CUADRO", "ESTATUA", "MUSEO", "TEATRO", "CINE", "CIRCO",
+            "GUITARRA", "PIANO", "VIOLÍN", "FLAUTA", "TAMBOR", "TROMPETA", "ARPÓN", "BARCO",
+            "VELERO", "CANOA", "AVIÓN", "COHETE", "TREN", "METRO", "TRANVÍA", "AUTOBÚS",
+            "CAMIÓN", "MOTO", "BICICLETA", "PATÍN", "RUEDA", "MOTOR", "VOLANTE", "FRENO",
+            // 4 dígitos
+            "MARIPOSA", "ELEFANTE", "COCODRILO", "DINOSAURIO", "RINOCERONTE", "HIPOPÓTAMO",
+            "CARRETERA", "AUTOPISTA", "SEMÁFORO", "GASOLINA", "MECÁNICO", "CONDUCTOR",
+            "TELÉFONO", "ORDENADOR", "PANTALLA", "TECLADO", "RATÓN", "IMPRESORA", "CÁMARA",
+            "BATERÍA", "ENCHUFE", "BOMBILLA", "LÁMPARA", "LINTERNA", "VELA", "CERILLA",
+            "MONTAÑA", "VOLCÁN", "DESIERTO", "BOSQUE", "SELVA", "PRADERA", "PANTANO", "CASCADA",
+            "TORMENTA", "RELÁMPAGO", "TRUENO", "GRANIZO", "NIEBLA", "ARCOÍRIS", "ESTRELLA",
+            "PLANETA", "GALAXIA", "UNIVERSO", "SATÉLITE", "COMETA", "ASTEROIDE", "ECLIPSE",
+            "CHOCOLATE", "CARAMELO", "GALLETA", "PASTEL", "HELADO", "TURRÓN", "MAZAPÁN"
+        ];
+
+        // Casillero mental sugerido por defecto (00 - 99)
+        const DEFAULT_LOCKER = {
+            "00": "VACA", "01": "COTO", "02": "CUNA", "03": "CAMA", "04": "CARO", "05": "CASA", "06": "CODO", "07": "CAFÉ", "08": "CAJA", "09": "COPA",
+            "10": "LACA", "11": "LATA", "12": "LUNA", "13": "LIMA", "14": "LORO", "15": "LOSA", "16": "LADO", "17": "LAZO", "18": "LAGO", "19": "LUPA",
+            "20": "NUCA", "21": "NOTA", "22": "NENE", "23": "NEMO", "24": "NORIA", "25": "NASA", "26": "NUDO", "27": "NAZI", "28": "NOGAL", "29": "NAIPE",
+            "30": "MOCO", "31": "MOTO", "32": "MANO", "33": "MOMIA", "34": "MURO", "35": "MESA", "36": "MODA", "37": "MAZO", "38": "MAGO", "39": "MAPA",
+            "40": "ROCA", "41": "RATA", "42": "RANA", "43": "RAMA", "44": "PERRO", "45": "ROSA", "46": "RUEDA", "47": "RIFA", "48": "REJA", "49": "ROPA",
+            "50": "SACO", "51": "SETA", "52": "SENO", "53": "SUMA", "54": "SUERO", "55": "SESO", "56": "SEDA", "57": "SOFÁ", "58": "SOGA", "59": "SOPA",
+            "60": "DADO", "61": "DEDO", "62": "DUNA", "63": "DAMA", "64": "DURO", "65": "DOSIS", "66": "BODA", "67": "DIFUSO", "68": "DOGO", "69": "DOPA",
+            "70": "FOCA", "71": "FOTO", "72": "FAENA", "73": "FAMA", "74": "FARO", "75": "FOSA", "76": "FIDEOS", "77": "FIFA", "78": "FUEGO", "79": "FUGA",
+            "80": "GASA", "81": "GATO", "82": "GANA", "83": "GOMA", "84": "GORRA", "85": "GUISO", "86": "GODO", "87": "GAFAS", "88": "GIGANTE", "89": "GUAPO",
+            "90": "PICO", "91": "PATO", "92": "PIÑA", "93": "PUMA", "94": "PERA", "95": "PESO", "96": "PODA", "97": "POZO", "98": "PAGO", "99": "PIPA"
+        };
+
+        /**
+         * 3. FUNCIONES PURAS DE CONVERSIÓN Y VALIDACIÓN CAMPAYO
+         */
+        function normalizeText(str) {
+            return str
+                .toUpperCase()
+                .trim()
+                .replace(/Á/g, 'A')
+                .replace(/É/g, 'E')
+                .replace(/Í/g, 'I')
+                .replace(/Ó/g, 'O')
+                .replace(/Ú/g, 'U')
+                .replace(/Ü/g, 'U');
+        }
+
+        function wordToCampayoNumber(word) {
+            const clean = normalizeText(word);
+            let result = '';
+            for (let i = 0; i < clean.length; i++) {
+                const ch = clean[i];
+                if (LETTER_TO_DIGIT[ch] !== undefined) {
+                    result += LETTER_TO_DIGIT[ch];
+                }
+            }
+            return result;
+        }
+
+        // Pre-procesar diccionario con su código numérico
+        const PROCESSED_DICT = WORD_DICTIONARY.map(w => ({
+            word: w,
+            code: wordToCampayoNumber(w)
+        })).filter(item => item.code.length >= 2);
+
+        /**
+         * 4. ESTADO GLOBAL Y PERSISTENCIA (localStorage)
+         */
+        let state = {
+            xp: 0,
+            streak: 0,
+            bestStreak: 0,
+            totalHits: 0,
+            totalAttempts: 0,
+            soundEnabled: true,
+            cheatSheetVisible: true,
+            blitzBest: 0,
+            digitStats: {
+                '0': { hits: 0, attempts: 0 },
+                '1': { hits: 0, attempts: 0 },
+                '2': { hits: 0, attempts: 0 },
+                '3': { hits: 0, attempts: 0 },
+                '4': { hits: 0, attempts: 0 },
+                '5': { hits: 0, attempts: 0 },
+                '6': { hits: 0, attempts: 0 },
+                '7': { hits: 0, attempts: 0 },
+                '8': { hits: 0, attempts: 0 },
+                '9': { hits: 0, attempts: 0 }
+            },
+            customLocker: { ...DEFAULT_LOCKER }
+        };
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('campayo_master_state_v1');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = {
+                        ...state,
+                        ...parsed,
+                        digitStats: { ...state.digitStats, ...(parsed.digitStats || {}) },
+                        customLocker: { ...DEFAULT_LOCKER, ...(parsed.customLocker || {}) }
+                    };
+                }
+            } catch (e) {
+                console.warn('No se pudo cargar localStorage:', e);
+            }
+            // Asegurar que cada entrada del locker tenga su código exacto por defecto si no es válida
+            for (let i = 0; i < 100; i++) {
+                const key = i.toString().padStart(2, '0');
+                if (!state.customLocker[key]) {
+                    state.customLocker[key] = DEFAULT_LOCKER[key] || '';
+                }
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('campayo_master_state_v1', JSON.stringify(state));
+            } catch (e) {
+                console.warn('No se pudo guardar en localStorage:', e);
+            }
+        }
+
+        /**
+         * 5. MOTOR DE SONIDO SINTETIZADO (Web Audio API - Cero archivos externos)
+         */
+        let audioCtx = null;
+        function playTone(type) {
+            if (!state.soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.23);
+                } else if (type === 'streak') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now);
+                    osc.frequency.setValueAtTime(783.99, now + 0.08);
+                    osc.frequency.setValueAtTime(1046.50, now + 0.16);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.36);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(120, now + 0.18);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.23);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(420, now);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                }
+            } catch (e) {}
+        }
+
+        /**
+         * 6. SISTEMA DE CONFETTI / PARTÍCULAS PARA CELEBRACIONES
+         */
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const cCtx = confettiCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function triggerConfetti(count = 45) {
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#38bdf8'];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+                    y: window.innerHeight / 2 - 50,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: (Math.random() - 1) * 12 - 3,
+                    size: Math.random() * 7 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    rotation: Math.random() * 360
+                });
+            }
+        }
+
+        function animateConfetti() {
+            cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.35; // gravedad
+                p.alpha -= 0.016;
+                p.rotation += 5;
+
+                if (p.alpha <= 0) {
+                    particles.splice(idx, 1);
+                } else {
+                    cCtx.save();
+                    cCtx.globalAlpha = p.alpha;
+                    cCtx.translate(p.x, p.y);
+                    cCtx.rotate((p.rotation * Math.PI) / 180);
+                    cCtx.fillStyle = p.color;
+                    cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    cCtx.restore();
+                }
+            });
+            requestAnimationFrame(animateConfetti);
+        }
+        animateConfetti();
+
+        /**
+         * 7. GAMIFICACIÓN: XP, RANGOS Y ACTUALIZACIÓN DE UI
+         */
+        const RANKS = [
+            { minXp: 0, name: 'Novato Mental' },
+            { minXp: 250, name: 'Aprendiz Mnemotécnico' },
+            { minXp: 750, name: 'Asociador Ágil' },
+            { minXp: 1600, name: 'Atleta Mental' },
+            { minXp: 3000, name: 'Maestro de la Memoria' },
+            { minXp: 5000, name: 'Gran Maestro Campayo' }
+        ];
+
+        function recordAttempt(isSuccess, digitsInvolved = [], baseXp = 10) {
+            state.totalAttempts++;
+            digitsInvolved.forEach(d => {
+                if (state.digitStats[d]) {
+                    state.digitStats[d].attempts++;
+                    if (isSuccess) state.digitStats[d].hits++;
+                }
+            });
+
+            if (isSuccess) {
+                state.totalHits++;
+                state.streak++;
+                if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+                const multiplier = state.streak >= 10 ? 3 : (state.streak >= 5 ? 2 : 1);
+                const examBonus = !state.cheatSheetVisible ? 1.5 : 1;
+                const earned = Math.round(baseXp * multiplier * examBonus);
+                state.xp += earned;
+
+                if (state.streak % 5 === 0) {
+                    playTone('streak');
+                    triggerConfetti(35);
+                } else {
+                    playTone('success');
+                }
+            } else {
+                state.streak = 0;
+                playTone('error');
+            }
+
+            saveState();
+            updateHeaderUI();
+        }
+
+        function updateHeaderUI() {
+            // Calcular rango actual y progreso
+            let currentRank = RANKS[0];
+            let nextRank = RANKS[RANKS.length - 1];
+            for (let i = 0; i < RANKS.length; i++) {
+                if (state.xp >= RANKS[i].minXp) {
+                    currentRank = RANKS[i];
+                    nextRank = RANKS[i + 1] || { minXp: currentRank.minXp + 2000 };
+                }
+            }
+
+            const progress = Math.min(100, Math.max(5, ((state.xp - currentRank.minXp) / (nextRank.minXp - currentRank.minXp)) * 100));
+            document.getElementById('rank-badge').textContent = currentRank.name;
+            document.getElementById('xp-bar').style.width = `${progress}%`;
+            document.getElementById('xp-text').textContent = `${state.xp} XP`;
+
+            // Racha y multiplicador
+            document.getElementById('streak-count').textContent = state.streak;
+            const multBadge = document.getElementById('multiplier-badge');
+            if (state.streak >= 10) {
+                multBadge.textContent = 'x3';
+                multBadge.classList.remove('hidden');
+            } else if (state.streak >= 5) {
+                multBadge.textContent = 'x2';
+                multBadge.classList.remove('hidden');
+            } else {
+                multBadge.classList.add('hidden');
+            }
+
+            // Icono de sonido
+            document.getElementById('sound-on-icon').classList.toggle('hidden', !state.soundEnabled);
+            document.getElementById('sound-off-icon').classList.toggle('hidden', state.soundEnabled);
+
+            // Estado de chuleta
+            const cheatBar = document.getElementById('cheat-sheet-bar');
+            const cheatBtn = document.getElementById('toggle-cheat-btn');
+            const cheatText = document.getElementById('cheat-btn-text');
+            if (state.cheatSheetVisible) {
+                cheatBar.classList.remove('hidden');
+                document.getElementById('eye-icon-open').classList.remove('hidden');
+                document.getElementById('eye-icon-closed').classList.add('hidden');
+                cheatText.textContent = 'Chuleta ON';
+                cheatBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25';
+            } else {
+                cheatBar.classList.add('hidden');
+                document.getElementById('eye-icon-open').classList.add('hidden');
+                document.getElementById('eye-icon-closed').classList.remove('hidden');
+                cheatText.textContent = 'Modo Examen (+50% XP)';
+                cheatBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25';
+            }
+        }
+
+        function toggleCheatSheet() {
+            state.cheatSheetVisible = !state.cheatSheetVisible;
+            playTone('click');
+            saveState();
+            updateHeaderUI();
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            if (state.soundEnabled) playTone('click');
+            saveState();
+            updateHeaderUI();
+        }
+
+        /**
+         * 8. RENDERIZADO DE LA CHULETA SUPERIOR Y GUÍA DE ASOCIACIONES
+         */
+        function renderReferenceTables() {
+            const cheatGrid = document.getElementById('cheat-grid');
+            const guideGrid = document.getElementById('guide-cards-grid');
+            cheatGrid.innerHTML = '';
+            guideGrid.innerHTML = '';
+
+            Object.entries(CAMPAYO_MAP).forEach(([digit, info]) => {
+                // Mini tarjeta para la barra superior
+                cheatGrid.innerHTML += `
+                    <div class="flex flex-col items-center justify-center py-1.5 px-1 rounded-lg bg-slate-800/80 border border-slate-700/60">
+                        <span class="font-mono text-xs sm:text-sm font-black text-indigo-400 leading-none">${digit}</span>
+                        <span class="font-bold text-[11px] sm:text-xs text-white mt-1 tracking-wider">${info.letters.join(' · ')}</span>
+                    </div>
+                `;
+
+                // Tarjeta detallada para la pestaña de Reglas & Asociaciones
+                guideGrid.innerHTML += `
+                    <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 flex flex-col justify-between hover:border-indigo-500/40 transition">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="w-9 h-9 rounded-xl bg-gradient-to-br ${info.color} flex items-center justify-center font-mono font-black text-lg text-white shadow-md">
+                                    ${digit}
+                                </span>
+                                <span class="font-mono font-extrabold text-lg text-white tracking-widest bg-slate-800 px-2.5 py-0.5 rounded-lg">
+                                    ${info.letters.join(', ')}
+                                </span>
+                            </div>
+                            <div class="text-xs font-bold text-indigo-300 mt-2">${info.hint}</div>
+                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">${info.visual}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        /**
+         * 9. NAVEGACIÓN ENTRE MODOS
+         */
+        let currentMode = 'guide';
+        function switchMode(mode) {
+            currentMode = mode;
+            playTone('click');
+
+            // Actualizar pestañas activas
+            document.querySelectorAll('.mode-tab').forEach(btn => {
+                if (btn.dataset.mode === mode) {
+                    btn.className = 'mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-600/25';
+                } else {
+                    btn.className = 'mode-tab shrink-0 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all glass-panel text-slate-300 hover:text-white';
+                }
+            });
+
+            // Mostrar vista correspondiente
+            document.querySelectorAll('.mode-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(`view-${mode}`).classList.remove('hidden');
+
+            // Inicializar el modo seleccionado
+            if (mode === 'reflex') nextReflexQuestion();
+            if (mode === 'decoder') nextDecoderWord();
+            if (mode === 'builder') nextBuilderTarget();
+            if (mode === 'match') initMatchGame();
+            if (mode === 'locker') renderLockerGrid();
+            if (mode === 'blitz') {
+                stopBlitzTimerOnly();
+                document.getElementById('blitz-best-score').textContent = state.blitzBest;
+                document.getElementById('blitz-start-screen').classList.remove('hidden');
+                document.getElementById('blitz-active-screen').classList.add('hidden');
+                document.getElementById('blitz-end-screen').classList.add('hidden');
+            }
+        }
+
+        /**
+         * 10. MODO 1: REFLEJOS RÁPIDOS (LETRA <-> NÚMERO)
+         */
+        let reflexSubmode = 'letter2num';
+        let currentReflex = { type: 'letter2num', digit: '7', letter: 'F', startTime: 0 };
+        let reflexTimes = [];
+
+        function initReflexKeypad() {
+            const pad = document.getElementById('reflex-numpad');
+            pad.innerHTML = '';
+            const order = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+            order.forEach(num => {
+                pad.innerHTML += `
+                    <button onclick="answerReflex('${num}')" class="key-btn py-3.5 sm:py-4 rounded-2xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-400 font-mono text-xl sm:text-2xl font-black text-white shadow-md">
+                        ${num}
+                    </button>
+                `;
+            });
+        }
+
+        function setReflexSubmode(sub) {
+            reflexSubmode = sub;
+            ['letter2num', 'num2letter', 'mixed'].forEach(id => {
+                const btn = document.getElementById(`sub-${id}`);
+                btn.className = (id === sub)
+                    ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition'
+                    : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition';
+            });
+            nextReflexQuestion();
+        }
+
+        function nextReflexQuestion() {
+            const digits = Object.keys(CAMPAYO_MAP);
+            const randDigit = digits[Math.floor(Math.random() * digits.length)];
+            const letters = CAMPAYO_MAP[randDigit].letters;
+            const randLetter = letters[Math.floor(Math.random() * letters.length)];
+
+            let qType = reflexSubmode;
+            if (qType === 'mixed') {
+                qType = Math.random() < 0.5 ? 'letter2num' : 'num2letter';
+            }
+
+            currentReflex = {
+                type: qType,
+                digit: randDigit,
+                letter: randLetter,
+                startTime: performance.now()
+            };
+
+            const stimEl = document.getElementById('reflex-stimulus');
+            const labelEl = document.getElementById('reflex-prompt-label');
+            const numpad = document.getElementById('reflex-numpad');
+            const letterpad = document.getElementById('reflex-letterpad');
+            document.getElementById('reflex-feedback').textContent = '';
+
+            if (qType === 'letter2num') {
+                labelEl.textContent = '¿Qué número representa esta consonante?';
+                stimEl.textContent = randLetter;
+                stimEl.className = 'font-mono text-6xl sm:text-7xl font-black text-white';
+                numpad.classList.remove('hidden');
+                letterpad.classList.add('hidden');
+            } else {
+                labelEl.textContent = '¿Qué consonante corresponde a este número?';
+                stimEl.textContent = randDigit;
+                stimEl.className = 'font-mono text-6xl sm:text-7xl font-black text-emerald-400';
+                numpad.classList.add('hidden');
+                letterpad.classList.remove('hidden');
+
+                // Generar 4 opciones de letras (1 correcta + 3 distractores de otros dígitos)
+                const distractors = [];
+                while (distractors.length < 3) {
+                    const d = digits[Math.floor(Math.random() * digits.length)];
+                    if (d !== randDigit) {
+                        const l = CAMPAYO_MAP[d].letters[Math.floor(Math.random() * CAMPAYO_MAP[d].letters.length)];
+                        if (!distractors.includes(l)) distractors.push(l);
+                    }
+                }
+                const options = [randLetter, ...distractors].sort(() => Math.random() - 0.5);
+                letterpad.innerHTML = options.map(opt => `
+                    <button onclick="answerReflex('${opt}')" class="key-btn py-4 rounded-2xl bg-slate-800 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-400 font-mono text-2xl font-black text-white shadow-md">
+                        ${opt}
+                    </button>
+                `).join('');
+            }
+        }
+
+        function answerReflex(choice) {
+            const box = document.getElementById('reflex-stimulus-box');
+            const fb = document.getElementById('reflex-feedback');
+            const expected = currentReflex.type === 'letter2num' ? currentReflex.digit : currentReflex.letter;
+
+            if (choice === expected) {
+                const elapsed = ((performance.now() - currentReflex.startTime) / 1000).toFixed(2);
+                reflexTimes.push(parseFloat(elapsed));
+                if (reflexTimes.length > 20) reflexTimes.shift();
+                const avg = (reflexTimes.reduce((a, b) => a + b, 0) / reflexTimes.length).toFixed(2);
+                document.getElementById('reflex-avg-speed').textContent = avg;
+
+                recordAttempt(true, [currentReflex.digit], 10);
+                fb.innerHTML = `<span class="text-emerald-400">✓ ¡Correcto! (${elapsed}s)</span>`;
+                box.classList.add('border-emerald-400', 'animate-bounce-short');
+                setTimeout(() => {
+                    box.classList.remove('border-emerald-400', 'animate-bounce-short');
+                    nextReflexQuestion();
+                }, 260);
+            } else {
+                recordAttempt(false, [currentReflex.digit]);
+                const ruleInfo = CAMPAYO_MAP[currentReflex.digit];
+                fb.innerHTML = `<span class="text-rose-400">✗ Error: ${currentReflex.digit} = ${ruleInfo.letters.join(', ')} (${ruleInfo.hint})</span>`;
+                box.classList.add('border-rose-500', 'animate-shake');
+                setTimeout(() => box.classList.remove('border-rose-500', 'animate-shake'), 400);
+            }
+        }
+
+        /**
+         * 11. MODO 2: DECODIFICADOR DE PALABRAS (PALABRA -> NÚMERO)
+         */
+        let decoderDifficulty = 2;
+        let currentDecoderItem = null;
+        let decoderUserInput = '';
+
+        function setDecoderDifficulty(diff) {
+            decoderDifficulty = diff;
+            [2, 3, 4, 0].forEach(d => {
+                const btn = document.getElementById(`dec-diff-${d}`);
+                btn.className = (d === diff)
+                    ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white'
+                    : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400';
+            });
+            nextDecoderWord();
+        }
+
+        function nextDecoderWord(skipped = false) {
+            if (skipped && currentDecoderItem) {
+                state.streak = 0;
+                updateHeaderUI();
+            }
+            const pool = decoderDifficulty === 0
+                ? PROCESSED_DICT
+                : PROCESSED_DICT.filter(item => item.code.length === decoderDifficulty);
+
+            currentDecoderItem = pool[Math.floor(Math.random() * pool.length)];
+            decoderUserInput = '';
+            document.getElementById('decoder-feedback').textContent = '';
+            renderDecoderWord();
+        }
+
+        function renderDecoderWord() {
+            const container = document.getElementById('decoder-word-display');
+            const inputBox = document.getElementById('decoder-input-display');
+            const word = currentDecoderItem.word;
+            const clean = normalizeText(word);
+
+            // Renderizar cada letra de la palabra con iluminación progresiva según el avance
+            let consonantIndex = 0;
+            container.innerHTML = word.split('').map((origChar, i) => {
+                const normChar = clean[i];
+                const isConsonant = LETTER_TO_DIGIT[normChar] !== undefined;
+                let badgeClass = 'bg-slate-800/60 border-slate-700/60 text-slate-400'; // Vocal o neutra
+                let subDigit = '·';
+
+                if (isConsonant) {
+                    if (consonantIndex < decoderUserInput.length) {
+                        const typedDigit = decoderUserInput[consonantIndex];
+                        const realDigit = LETTER_TO_DIGIT[normChar];
+                        if (typedDigit === realDigit) {
+                            badgeClass = 'bg-emerald-500/20 border-emerald-400 text-emerald-300 scale-105';
+                            subDigit = realDigit;
+                        } else {
+                            badgeClass = 'bg-rose-500/20 border-rose-500 text-rose-300';
+                            subDigit = typedDigit;
+                        }
+                    } else if (consonantIndex === decoderUserInput.length) {
+                        badgeClass = 'bg-indigo-500/20 border-indigo-400 text-white ring-2 ring-indigo-500/30';
+                        subDigit = '?';
+                    } else {
+                        badgeClass = 'bg-slate-800 border-slate-600 text-white';
+                        subDigit = '?';
+                    }
+                    consonantIndex++;
+                }
+
+                return `
+                    <div class="flex flex-col items-center px-2.5 sm:px-3.5 py-2 rounded-xl border-2 transition-all ${badgeClass}">
+                        <span class="text-xl sm:text-3xl font-black">${origChar}</span>
+                        <span class="font-mono text-[11px] font-bold mt-0.5 opacity-80">${subDigit}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Renderizar caja de dígitos introducidos
+            const targetLen = currentDecoderItem.code.length;
+            let displaySlots = [];
+            for (let i = 0; i < targetLen; i++) {
+                displaySlots.push(decoderUserInput[i] !== undefined ? decoderUserInput[i] : '_');
+            }
+            inputBox.textContent = displaySlots.join(' ');
+        }
+
+        function decoderInputDigit(digit) {
+            if (!currentDecoderItem) return;
+            const targetCode = currentDecoderItem.code;
+            if (decoderUserInput.length >= targetCode.length) return;
+
+            decoderUserInput += digit;
+            renderDecoderWord();
+
+            const idx = decoderUserInput.length - 1;
+            const expectedDigit = targetCode[idx];
+            const fb = document.getElementById('decoder-feedback');
+
+            if (digit !== expectedDigit) {
+                recordAttempt(false, [expectedDigit]);
+                fb.innerHTML = `<span class="text-rose-400">✗ Esa consonante vale <strong>${expectedDigit}</strong> (${CAMPAYO_MAP[expectedDigit].letters.join(', ')})</span>`;
+                document.getElementById('decoder-input-display').classList.add('animate-shake', 'border-rose-500');
+                setTimeout(() => {
+                    document.getElementById('decoder-input-display').classList.remove('animate-shake', 'border-rose-500');
+                    decoderUserInput = decoderUserInput.slice(0, -1);
+                    renderDecoderWord();
+                }, 480);
+                return;
+            }
+
+            playTone('click');
+
+            // Si completó toda la palabra con éxito
+            if (decoderUserInput === targetCode) {
+                recordAttempt(true, targetCode.split(''), 15 * targetCode.length);
+                fb.innerHTML = `<span class="text-emerald-400">✓ ¡Excelente! ${currentDecoderItem.word} = ${targetCode}</span>`;
+                setTimeout(() => nextDecoderWord(), 650);
+            }
+        }
+
+        function decoderBackspace() {
+            if (decoderUserInput.length > 0) {
+                decoderUserInput = decoderUserInput.slice(0, -1);
+                document.getElementById('decoder-feedback').textContent = '';
+                renderDecoderWord();
+            }
+        }
+
+        /**
+         * 12. MODO 3: CONSTRUCTOR DE PALABRAS (NÚMERO -> PALABRA LIBRE)
+         */
+        let builderDigits = 2;
+        let builderTarget = '41';
+        let builderHintVisible = false;
+
+        function setBuilderDigits(n) {
+            builderDigits = n;
+            [2, 3].forEach(d => {
+                document.getElementById(`bld-dig-${d}`).className = (d === n)
+                    ? 'px-3 py-1 rounded-lg text-xs font-bold bg-purple-600 text-white'
+                    : 'px-3 py-1 rounded-lg text-xs font-bold text-slate-400';
+            });
+            nextBuilderTarget();
+        }
+
+        function nextBuilderTarget() {
+            let num = '';
+            for (let i = 0; i < builderDigits; i++) {
+                num += Math.floor(Math.random() * 10).toString();
+            }
+            builderTarget = num;
+            document.getElementById('builder-target-number').textContent = builderTarget;
+            document.getElementById('builder-input').value = '';
+            document.getElementById('builder-live-analysis').innerHTML = 'Escribe una palabra para ver su conversión en vivo...';
+            document.getElementById('builder-result-box').classList.add('hidden');
+            renderBuilderHints();
+            document.getElementById('builder-input').focus();
+        }
+
+        function toggleBuilderHint() {
+            builderHintVisible = !builderHintVisible;
+            document.getElementById('builder-hint-box').classList.toggle('hidden', !builderHintVisible);
+        }
+
+        function renderBuilderHints() {
+            const box = document.getElementById('builder-hint-box');
+            box.innerHTML = builderTarget.split('').map((d, i) => `
+                <div class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs">
+                    <span class="text-slate-400">Pos ${i + 1} (</span><strong class="font-mono text-indigo-400">${d}</strong><span class="text-slate-400">): </span>
+                    <strong class="text-white">${CAMPAYO_MAP[d].letters.join(', ')}</strong>
+                </div>
+            `).join('');
+        }
+
+        function previewBuilderWord() {
+            const raw = document.getElementById('builder-input').value;
+            const liveBox = document.getElementById('builder-live-analysis');
+            if (!raw.trim()) {
+                liveBox.innerHTML = 'Escribe una palabra para ver su conversión en vivo...';
+                return;
+            }
+            const code = wordToCampayoNumber(raw);
+            const isMatch = code === builderTarget;
+            liveBox.innerHTML = `
+                <span>Tu palabra genera el número:</span>
+                <span class="font-mono font-black text-base px-2.5 py-0.5 rounded-lg ${isMatch ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-800 text-amber-300'}">
+                    ${code || '(sin consonantes)'}
+                </span>
+            `;
+        }
+
+        function submitBuilderWord(e) {
+            e.preventDefault();
+            const raw = document.getElementById('builder-input').value.trim();
+            const clean = normalizeText(raw);
+            const resultBox = document.getElementById('builder-result-box');
+
+            // Validaciones básicas de palabra real
+            const hasVowel = /[AEIOU]/.test(clean);
+            const onlyLetters = /^[A-ZÑ]+$/.test(clean);
+            const generatedCode = wordToCampayoNumber(clean);
+
+            resultBox.classList.remove('hidden');
+
+            if (!onlyLetters || clean.length < 2 || !hasVowel) {
+                playTone('error');
+                resultBox.className = 'max-w-md mx-auto mt-4 p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 text-center text-xs text-rose-300';
+                resultBox.innerHTML = '⚠️ Escribe una palabra válida en español (solo letras y al menos una vocal).';
+                return;
+            }
+
+            if (generatedCode === builderTarget) {
+                recordAttempt(true, builderTarget.split(''), 25 * builderDigits);
+                const saveLockerBtn = builderDigits === 2
+                    ? `<button onclick="saveWordToLocker('${builderTarget}', '${clean}')" class="mt-2.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">💾 Guardar "${clean}" en mi Casillero ${builderTarget}</button>`
+                    : '';
+
+                resultBox.className = 'max-w-md mx-auto mt-4 p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-center text-sm text-emerald-300 animate-pop';
+                resultBox.innerHTML = `
+                    <div class="font-bold">🎉 ¡Genial! "${clean}" equivale exactamente a <span class="font-mono">${builderTarget}</span></div>
+                    ${saveLockerBtn}
+                    <div class="mt-2"><button onclick="nextBuilderTarget()" class="text-xs underline text-indigo-300 hover:text-white">Siguiente número →</button></div>
+                `;
+            } else {
+                recordAttempt(false, builderTarget.split(''));
+                resultBox.className = 'max-w-md mx-auto mt-4 p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 text-center text-xs text-rose-300 animate-shake';
+                resultBox.innerHTML = `
+                    ✗ <strong>"${clean}"</strong> se traduce como <strong class="font-mono">${generatedCode || 'vacío'}</strong>, pero buscamos <strong class="font-mono">${builderTarget}</strong>.
+                `;
+            }
+        }
+
+        function saveWordToLocker(numKey, word) {
+            state.customLocker[numKey] = word;
+            saveState();
+            playTone('streak');
+            const resultBox = document.getElementById('builder-result-box');
+            resultBox.innerHTML = `<span class="text-emerald-300 font-bold">✓ ¡Guardado! Ahora el número ${numKey} está asociado a "${word}" en tu Casillero.</span>`;
+        }
+
+        /**
+         * 13. MODO 4: LLUVIA DE ASOCIACIONES (EMPAREJAR 5x5)
+         */
+        let matchPairs = [];
+        let selectedMatchNum = null;
+        let selectedMatchWord = null;
+        let matchedCount = 0;
+
+        function initMatchGame() {
+            matchedCount = 0;
+            selectedMatchNum = null;
+            selectedMatchWord = null;
+            document.getElementById('match-progress').textContent = '0/5';
+
+            // Seleccionar 5 palabras con códigos únicos
+            const shuffled = [...PROCESSED_DICT].sort(() => Math.random() - 0.5);
+            matchPairs = [];
+            const usedCodes = new Set();
+            for (const item of shuffled) {
+                if (!usedCodes.has(item.code) && item.code.length <= 3) {
+                    usedCodes.add(item.code);
+                    matchPairs.push(item);
+                    if (matchPairs.length === 5) break;
+                }
+            }
+
+            const numsCol = document.getElementById('match-numbers-col');
+            const wordsCol = document.getElementById('match-words-col');
+
+            const shuffledNums = [...matchPairs].sort(() => Math.random() - 0.5);
+            const shuffledWords = [...matchPairs].sort(() => Math.random() - 0.5);
+
+            numsCol.innerHTML = shuffledNums.map(p => `
+                <button id="m-num-${p.code}" onclick="selectMatchItem('num', '${p.code}')"
+                    class="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border-2 border-slate-700 font-mono text-xl font-black text-indigo-300 transition-all">
+                    ${p.code}
+                </button>
+            `).join('');
+
+            wordsCol.innerHTML = shuffledWords.map(p => `
+                <button id="m-word-${p.code}" onclick="selectMatchItem('word', '${p.code}')"
+                    class="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border-2 border-slate-700 font-bold text-base sm:text-lg text-white transition-all">
+                    ${p.word}
+                </button>
+            `).join('');
+        }
+
+        function selectMatchItem(type, code) {
+            playTone('click');
+            if (type === 'num') {
+                if (selectedMatchNum) {
+                    document.getElementById(`m-num-${selectedMatchNum}`).classList.remove('border-indigo-400', 'bg-indigo-600/30');
+                }
+                selectedMatchNum = code;
+                document.getElementById(`m-num-${code}`).classList.add('border-indigo-400', 'bg-indigo-600/30');
+            } else {
+                if (selectedMatchWord) {
+                    document.getElementById(`m-word-${selectedMatchWord}`).classList.remove('border-emerald-400', 'bg-emerald-600/30');
+                }
+                selectedMatchWord = code;
+                document.getElementById(`m-word-${code}`).classList.add('border-emerald-400', 'bg-emerald-600/30');
+            }
+
+            if (selectedMatchNum && selectedMatchWord) {
+                const nBtn = document.getElementById(`m-num-${selectedMatchNum}`);
+                const wBtn = document.getElementById(`m-word-${selectedMatchWord}`);
+
+                if (selectedMatchNum === selectedMatchWord) {
+                    // Pareja correcta
+                    recordAttempt(true, selectedMatchNum.split(''), 15);
+                    nBtn.disabled = true;
+                    wBtn.disabled = true;
+                    nBtn.className = 'w-full py-3.5 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500/50 font-mono text-xl font-black text-emerald-400 opacity-60 cursor-default';
+                    wBtn.className = 'w-full py-3.5 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500/50 font-bold text-base sm:text-lg text-emerald-300 opacity-60 cursor-default';
+                    matchedCount++;
+                    document.getElementById('match-progress').textContent = `${matchedCount}/5`;
+
+                    if (matchedCount === 5) {
+                        triggerConfetti(40);
+                        setTimeout(initMatchGame, 900);
+                    }
+                } else {
+                    // Pareja incorrecta
+                    recordAttempt(false, selectedMatchNum.split(''));
+                    nBtn.classList.add('border-rose-500', 'animate-shake');
+                    wBtn.classList.add('border-rose-500', 'animate-shake');
+                    setTimeout(() => {
+                        nBtn.classList.remove('border-rose-500', 'animate-shake', 'border-indigo-400', 'bg-indigo-600/30');
+                        wBtn.classList.remove('border-rose-500', 'animate-shake', 'border-emerald-400', 'bg-emerald-600/30');
+                    }, 400);
+                }
+
+                selectedMatchNum = null;
+                selectedMatchWord = null;
+            }
+        }
+
+        /**
+         * 14. MODO 5: CASILLERO MENTAL (00 - 99) & QUIZ PERSONALIZADO
+         */
+        let editingLockerNum = null;
+
+        function renderLockerGrid() {
+            const grid = document.getElementById('locker-grid');
+            const query = normalizeText(document.getElementById('locker-search').value || '');
+            let html = '';
+
+            for (let i = 0; i < 100; i++) {
+                const key = i.toString().padStart(2, '0');
+                const word = state.customLocker[key] || '';
+                if (query && !key.includes(query) && !normalizeText(word).includes(query)) {
+                    continue;
+                }
+
+                const c1 = CAMPAYO_MAP[key[0]].letters.join('/');
+                const c2 = CAMPAYO_MAP[key[1]].letters.join('/');
+
+                html += `
+                    <div onclick="openEditLockerModal('${key}')"
+                        class="cursor-pointer p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 transition group">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-base font-black text-indigo-400">${key}</span>
+                            <span class="text-[10px] font-mono text-slate-500 group-hover:text-slate-300">${c1} · ${c2}</span>
+                        </div>
+                        <div class="font-extrabold text-sm text-white mt-1.5 truncate">${word || '---'}</div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function openEditLockerModal(key) {
+            editingLockerNum = key;
+            const c1 = CAMPAYO_MAP[key[0]].letters.join(', ');
+            const c2 = CAMPAYO_MAP[key[1]].letters.join(', ');
+            document.getElementById('modal-locker-num').textContent = key;
+            document.getElementById('modal-locker-consonants').textContent = `1º (${c1}) + 2º (${c2})`;
+            document.getElementById('modal-locker-input').value = state.customLocker[key] || '';
+            document.getElementById('modal-locker-warning').classList.add('hidden');
+            document.getElementById('edit-locker-modal').classList.remove('hidden');
+            document.getElementById('modal-locker-input').focus();
+        }
+
+        function closeEditLockerModal() {
+            document.getElementById('edit-locker-modal').classList.add('hidden');
+        }
+
+        function saveLockerEdit() {
+            const val = normalizeText(document.getElementById('modal-locker-input').value);
+            if (!val) return;
+            const code = wordToCampayoNumber(val);
+            const warn = document.getElementById('modal-locker-warning');
+
+            if (code !== editingLockerNum) {
+                warn.textContent = `⚠️ Ojo: "${val}" equivale al número ${code || 'vacío'}, no al ${editingLockerNum}.`;
+                warn.classList.remove('hidden');
+                // Permitimos guardarlo si insiste con doble clic, o corregirlo
+                if (warn.dataset.confirmed !== val) {
+                    warn.dataset.confirmed = val;
+                    warn.textContent += ' Pulsa "Guardar" otra vez si quieres forzarlo.';
+                    return;
+                }
+            }
+            warn.dataset.confirmed = '';
+            state.customLocker[editingLockerNum] = val;
+            saveState();
+            playTone('success');
+            closeEditLockerModal();
+            renderLockerGrid();
+        }
+
+        // Quiz del Casillero Personal
+        let lockerQuizActive = false;
+        let currentLockerQuizTarget = '00';
+
+        function toggleLockerQuiz() {
+            lockerQuizActive = !lockerQuizActive;
+            const panel = document.getElementById('locker-quiz-panel');
+            panel.classList.toggle('hidden', !lockerQuizActive);
+            if (lockerQuizActive) nextLockerQuizQuestion();
+        }
+
+        function nextLockerQuizQuestion() {
+            const keys = Object.keys(state.customLocker);
+            currentLockerQuizTarget = keys[Math.floor(Math.random() * keys.length)];
+            const correctWord = state.customLocker[currentLockerQuizTarget];
+
+            document.getElementById('locker-quiz-target').textContent = currentLockerQuizTarget;
+            document.getElementById('locker-quiz-feedback').textContent = '';
+
+            // 3 distractores del propio casillero
+            const options = [correctWord];
+            while (options.length < 4) {
+                const rk = keys[Math.floor(Math.random() * keys.length)];
+                const rw = state.customLocker[rk];
+                if (rw && !options.includes(rw)) options.push(rw);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            document.getElementById('locker-quiz-options').innerHTML = options.map(opt => `
+                <button onclick="answerLockerQuiz('${opt}')" class="key-btn py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-emerald-600 border border-slate-700 font-bold text-sm text-white transition">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function answerLockerQuiz(chosenWord) {
+            const correctWord = state.customLocker[currentLockerQuizTarget];
+            const fb = document.getElementById('locker-quiz-feedback');
+            if (chosenWord === correctWord) {
+                recordAttempt(true, currentLockerQuizTarget.split(''), 15);
+                fb.innerHTML = `<span class="text-emerald-400">✓ ¡Exacto! ${currentLockerQuizTarget} = ${correctWord}</span>`;
+                setTimeout(nextLockerQuizQuestion, 500);
+            } else {
+                recordAttempt(false, currentLockerQuizTarget.split(''));
+                fb.innerHTML = `<span class="text-rose-400">✗ Tu palabra para ${currentLockerQuizTarget} es ${correctWord}</span>`;
+            }
+        }
+
+        /**
+         * 15. MODO 6: CONTRARRELOJ / SUPERVIVENCIA 60s
+         */
+        let blitzTimer = null;
+        let blitzTimeLeft = 60;
+        let blitzScore = 0;
+        let currentBlitzAnswer = '';
+
+        function stopBlitzTimerOnly() {
+            if (blitzTimer) {
+                clearInterval(blitzTimer);
+                blitzTimer = null;
+            }
+        }
+
+        function startBlitzGame() {
+            stopBlitzTimerOnly();
+            blitzTimeLeft = 60;
+            blitzScore = 0;
+            document.getElementById('blitz-score').textContent = '0';
+            document.getElementById('blitz-time-text').textContent = '60s';
+            document.getElementById('blitz-time-bar').style.width = '100%';
+
+            document.getElementById('blitz-start-screen').classList.add('hidden');
+            document.getElementById('blitz-end-screen').classList.add('hidden');
+            document.getElementById('blitz-active-screen').classList.remove('hidden');
+
+            nextBlitzQuestion();
+
+            blitzTimer = setInterval(() => {
+                blitzTimeLeft--;
+                document.getElementById('blitz-time-text').textContent = `${blitzTimeLeft}s`;
+                document.getElementById('blitz-time-bar').style.width = `${(blitzTimeLeft / 60) * 100}%`;
+
+                if (blitzTimeLeft <= 0) {
+                    finishBlitzGame();
+                }
+            }, 1000);
+        }
+
+        function stopBlitzGame() {
+            finishBlitzGame();
+        }
+
+        function finishBlitzGame() {
+            stopBlitzTimerOnly();
+            document.getElementById('blitz-active-screen').classList.add('hidden');
+            document.getElementById('blitz-end-screen').classList.remove('hidden');
+            document.getElementById('blitz-final-score').textContent = blitzScore;
+
+            const newRecMsg = document.getElementById('blitz-new-record-msg');
+            if (blitzScore > state.blitzBest) {
+                state.blitzBest = blitzScore;
+                saveState();
+                newRecMsg.classList.remove('hidden');
+                triggerConfetti(50);
+                playTone('streak');
+            } else {
+                newRecMsg.classList.add('hidden');
+            }
+        }
+
+        function nextBlitzQuestion() {
+            const typeRoll = Math.random();
+            const typeBadge = document.getElementById('blitz-q-type');
+            const stimEl = document.getElementById('blitz-stimulus');
+            const optsEl = document.getElementById('blitz-options');
+
+            const digits = Object.keys(CAMPAYO_MAP);
+
+            if (typeRoll < 0.4) {
+                // Tipo 1: Letra -> Número
+                const d = digits[Math.floor(Math.random() * digits.length)];
+                const l = CAMPAYO_MAP[d].letters[Math.floor(Math.random() * CAMPAYO_MAP[d].letters.length)];
+                typeBadge.textContent = 'Letra → Número';
+                stimEl.textContent = l;
+                currentBlitzAnswer = d;
+
+                const opts = [d];
+                while (opts.length < 4) {
+                    const rd = digits[Math.floor(Math.random() * digits.length)];
+                    if (!opts.includes(rd)) opts.push(rd);
+                }
+                opts.sort(() => Math.random() - 0.5);
+                optsEl.innerHTML = opts.map(o => `
+                    <button onclick="answerBlitz('${o}')" class="key-btn py-3.5 rounded-xl bg-slate-800 hover:bg-indigo-600 border border-slate-700 font-mono text-2xl font-black text-white">
+                        ${o}
+                    </button>
+                `).join('');
+            } else if (typeRoll < 0.75) {
+                // Tipo 2: Palabra -> Número
+                const pool = PROCESSED_DICT.filter(i => i.code.length === 2);
+                const item = pool[Math.floor(Math.random() * pool.length)];
+                typeBadge.textContent = 'Palabra → Número';
+                stimEl.textContent = item.word;
+                currentBlitzAnswer = item.code;
+
+                const opts = [item.code];
+                while (opts.length < 4) {
+                    const rItem = pool[Math.floor(Math.random() * pool.length)];
+                    if (!opts.includes(rItem.code)) opts.push(rItem.code);
+                }
+                opts.sort(() => Math.random() - 0.5);
+                optsEl.innerHTML = opts.map(o => `
+                    <button onclick="answerBlitz('${o}')" class="key-btn py-3.5 rounded-xl bg-slate-800 hover:bg-emerald-600 border border-slate-700 font-mono text-2xl font-black text-white">
+                        ${o}
+                    </button>
+                `).join('');
+            } else {
+                // Tipo 3: Número -> Palabra
+                const pool = PROCESSED_DICT.filter(i => i.code.length === 2);
+                const item = pool[Math.floor(Math.random() * pool.length)];
+                typeBadge.textContent = 'Número → Palabra';
+                stimEl.textContent = item.code;
+                currentBlitzAnswer = item.word;
+
+                const opts = [item.word];
+                while (opts.length < 4) {
+                    const rItem = pool[Math.floor(Math.random() * pool.length)];
+                    if (rItem.code !== item.code && !opts.includes(rItem.word)) opts.push(rItem.word);
+                }
+                opts.sort(() => Math.random() - 0.5);
+                optsEl.innerHTML = opts.map(o => `
+                    <button onclick="answerBlitz('${o}')" class="key-btn py-3.5 rounded-xl bg-slate-800 hover:bg-purple-600 border border-slate-700 font-bold text-lg text-white">
+                        ${o}
+                    </button>
+                `).join('');
+            }
+        }
+
+        function answerBlitz(choice) {
+            if (choice === currentBlitzAnswer) {
+                blitzScore += 100;
+                recordAttempt(true, [], 10);
+            } else {
+                blitzScore = Math.max(0, blitzScore - 30);
+                recordAttempt(false, []);
+            }
+            document.getElementById('blitz-score').textContent = blitzScore;
+            nextBlitzQuestion();
+        }
+
+        /**
+         * 16. MODAL DE ESTADÍSTICAS
+         */
+        function openStatsModal() {
+            document.getElementById('stat-total-hits').textContent = state.totalHits;
+            const acc = state.totalAttempts > 0 ? Math.round((state.totalHits / state.totalAttempts) * 100) : 0;
+            document.getElementById('stat-accuracy').textContent = `${acc}%`;
+            document.getElementById('stat-best-streak').textContent = state.bestStreak;
+
+            const barsContainer = document.getElementById('stat-digits-bars');
+            barsContainer.innerHTML = Object.entries(CAMPAYO_MAP).map(([digit, info]) => {
+                const st = state.digitStats[digit] || { hits: 0, attempts: 0 };
+                const pct = st.attempts > 0 ? Math.round((st.hits / st.attempts) * 100) : 0;
+                const barColor = st.attempts === 0 ? 'bg-slate-700' : (pct >= 80 ? 'bg-emerald-500' : (pct >= 50 ? 'bg-amber-500' : 'bg-rose-500'));
+
+                return `
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="font-mono font-black text-indigo-400 w-4">${digit}</span>
+                        <span class="text-slate-400 w-14 truncate">${info.letters.join(',')}</span>
+                        <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full ${barColor} transition-all" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="font-mono text-slate-300 w-10 text-right">${st.attempts > 0 ? pct + '%' : '--'}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('stats-modal').classList.remove('hidden');
+        }
+
+        function closeStatsModal() {
+            document.getElementById('stats-modal').classList.add('hidden');
+        }
+
+        function resetAllProgress() {
+            localStorage.removeItem('campayo_master_state_v1');
+            location.reload();
+        }
+
+        /**
+         * 17. SOPORTE DE TECLADO FÍSICO PARA MAYOR FLUIDEZ
+         */
+        document.addEventListener('keydown', (e) => {
+            // Ignorar si está escribiendo en un input de texto
+            if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                return;
+            }
+
+            if (currentMode === 'reflex' && currentReflex.type === 'letter2num') {
+                if (/^[0-9]$/.test(e.key)) {
+                    answerReflex(e.key);
+                }
+            } else if (currentMode === 'decoder') {
+                if (/^[0-9]$/.test(e.key)) {
+                    decoderInputDigit(e.key);
+                } else if (e.key === 'Backspace') {
+                    decoderBackspace();
+                }
+            }
+        });
+
+        /**
+         * 18. INICIALIZACIÓN AL CARGAR LA PÁGINA
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderReferenceTables();
+            initReflexKeypad();
+            updateHeaderUI();
+        });
+    </script>
+</body>
+</html>
